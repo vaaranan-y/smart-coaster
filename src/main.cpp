@@ -1,18 +1,24 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
+void setup()
+{
+  Serial.begin(115200); // Set the baud rate to 115200 (change if needed)
+  delay(2000);          // Delay for 2 seconds
 
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  Serial.print("ESP32 Serial Monitor Test"); // Print a message to the serial monitor
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-}
+void loop()
+{
+  // Your main code goes here
+  // Add any additional functionality or logic as needed
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(500);
+
+  Serial.print("WAITING\n");
+
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
 }
