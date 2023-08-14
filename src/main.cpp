@@ -23,6 +23,22 @@ void loop()
   // Your main code goes here
   // Add any additional functionality or logic as needed
 
+  if (scale.is_ready())
+  {
+    scale.set_scale();
+    Serial.println("SETTING SCALE...\n");
+    delay(3000); // time to 'zero' out the scale
+    scale.tare();
+    Serial.println("TARING COMPLETE\n");
+    Serial.println("MEASURING...\n");
+    delay(3000);                        // time to place actual weight on the scale
+    long measure = scale.get_units(10); // performs 10 readings;
+    Serial.print("Value: ");
+    Serial.println(measure);
+  }
+
+  // TESTING CODE
+
   // digitalWrite(LED_BUILTIN, HIGH);
   // delay(100);
 
