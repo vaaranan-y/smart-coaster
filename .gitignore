@@ -3,4 +3,4 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
-/Users/vaaranan_yogalingam/Documents/PlatformIO/Projects/smart-coaster/src/secrets.h
+src/secrets.h
