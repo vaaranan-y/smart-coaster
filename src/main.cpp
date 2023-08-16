@@ -19,6 +19,28 @@ HX711 scale;
 WiFiClientSecure network = WiFiClientSecure();
 PubSubClient pubSubClient(network);
 
+void messageHandler(char *topic, byte *payload, unsigned int length)
+{
+  Serial.print("TOPIC: ");
+  Serial.println(topic);
+
+  StaticJsonDocument<200> doc;
+  deserializeJson(doc, payload);
+  const char *message = doc["message"];
+  Serial.println(message);
+}
+
+void publishMessage()
+{
+  StaticJsonDocument<200> doc;
+  doc["rawScaleValue"] = rawScaleValue;
+  doc["calibratedMassValue"] = calibratedMassValue;
+  char jsonBuffer[512];
+  serializeJson(doc, jsonBuffer); // print to client
+
+  pubSubClient.publish(AWS_PUB_TOPIC, jsonBuffer);
+}
+
 void connectAWS()
 {
   WiFi.mode(WIFI_STA);
@@ -62,28 +84,6 @@ void connectAWS()
   pubSubClient.subscribe(AWS_SUB_TOPIC);
 
   Serial.println("AWS IOT Connection Successful");
-}
-
-void publishMessage()
-{
-  StaticJsonDocument<200> doc;
-  doc["rawScaleValue"] = rawScaleValue;
-  doc["calibratedMassValue"] = calibratedMassValue;
-  char jsonBuffer[512];
-  serializeJson(doc, jsonBuffer); // print to client
-
-  pubSubClient.publish(AWS_PUB_TOPIC, jsonBuffer);
-}
-
-void messageHandler(char *topic, byte *payload, unsigned int length)
-{
-  Serial.print("TOPIC: ");
-  Serial.println(topic);
-
-  StaticJsonDocument<200> doc;
-  deserializeJson(doc, payload);
-  const char *message = doc["message"];
-  Serial.println(message);
 }
 
 void setup()
