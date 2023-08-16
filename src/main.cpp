@@ -75,6 +75,17 @@ void publishMessage()
   pubSubClient.publish(AWS_PUB_TOPIC, jsonBuffer);
 }
 
+void messageHandler(char *topic, byte *payload, unsigned int length)
+{
+  Serial.print("TOPIC: ");
+  Serial.println(topic);
+
+  StaticJsonDocument<200> doc;
+  deserializeJson(doc, payload);
+  const char *message = doc["message"];
+  Serial.println(message);
+}
+
 void setup()
 {
   Serial.begin(115200); // Set the baud rate to 115200 (change if needed)
