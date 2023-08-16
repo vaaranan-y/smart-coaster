@@ -10,6 +10,10 @@
             "includePath": [
                 "/Users/vaaranan_yogalingam/Documents/PlatformIO/Projects/smart-coaster/include",
                 "/Users/vaaranan_yogalingam/Documents/PlatformIO/Projects/smart-coaster/src",
+                "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
+                "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                "/Users/vaaranan_yogalingam/Documents/PlatformIO/Projects/smart-coaster/.pio/libdeps/esp32doit-devkit-v1/ArduinoJson/src",
+                "/Users/vaaranan_yogalingam/Documents/PlatformIO/Projects/smart-coaster/.pio/libdeps/esp32doit-devkit-v1/PubSubClient/src",
                 "/Users/vaaranan_yogalingam/Documents/PlatformIO/Projects/smart-coaster/.pio/libdeps/esp32doit-devkit-v1/HX711/src",
                 "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
                 "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include",
@@ -233,8 +237,6 @@
                 "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/USB/src",
                 "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                 "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
-                "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
-                "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                 "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WiFiProv/src",
                 "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
                 ""
@@ -244,6 +246,10 @@
                 "path": [
                     "/Users/vaaranan_yogalingam/Documents/PlatformIO/Projects/smart-coaster/include",
                     "/Users/vaaranan_yogalingam/Documents/PlatformIO/Projects/smart-coaster/src",
+                    "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
+                    "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                    "/Users/vaaranan_yogalingam/Documents/PlatformIO/Projects/smart-coaster/.pio/libdeps/esp32doit-devkit-v1/ArduinoJson/src",
+                    "/Users/vaaranan_yogalingam/Documents/PlatformIO/Projects/smart-coaster/.pio/libdeps/esp32doit-devkit-v1/PubSubClient/src",
                     "/Users/vaaranan_yogalingam/Documents/PlatformIO/Projects/smart-coaster/.pio/libdeps/esp32doit-devkit-v1/HX711/src",
                     "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
                     "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include",
@@ -467,8 +473,6 @@
                     "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/USB/src",
                     "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                     "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
-                    "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
-                    "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                     "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/WiFiProv/src",
                     "/Users/vaaranan_yogalingam/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
                     ""

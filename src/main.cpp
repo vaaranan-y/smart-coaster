@@ -1,15 +1,68 @@
-#include <Arduino.h>
+#include <WiFiClientSecure.h>
+#include <PubSubClient.h>
+#include <ArduinoJson.h>
 #include "soc/rtc.h"
 #include "HX711.h"
 #include "esp32-hal-cpu.h"
+#include "secrets.h"
 
-#define AWS_PUB_TOPIC = "smart_coaster/pub"
-#define AWS_SUB_TOPIC = "smart_coaster/sub"
+#define AWS_PUB_TOPIC "smart_coaster/pub"
+#define AWS_SUB_TOPIC "smart_coaster/sub"
 
 const int LOADCELL_SCK = 4;
 const int LOADCELL_DOUT = 16;
 
+int rawScaleValue;
+double calibratedMassValue;
+
 HX711 scale;
+WiFiClientSecure network = WiFiClientSecure();
+PubSubClient pubSubClient(network);
+
+void connectAWS()
+{
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_NETWORK, WIFI_PASSWORD);
+
+  Serial.println("Connecting to Wi-Fi");
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.println("WAITING");
+  }
+
+  Serial.println("WiFi Network Connection Successful");
+  // Configure WiFiClientSecure with AWS IoT Thing credentials
+  network.setCACert(AWS_CERT_CA);
+  network.setCertificate(AWS_CERT_CRT);
+  network.setPrivateKey(AWS_CERT_PRIVATE);
+
+  // Connect to the AWS endpoint
+  pubSubClient.setServer(AWS_IOT_ENDPOINT, 8883);
+
+  // Create a message handler
+  pubSubClient.setCallback(messageHandler);
+
+  Serial.println("Connecting to AWS IOT");
+
+  while (!pubSubClient.connect(THINGNAME))
+  {
+    Serial.println("WAITING");
+    delay(100);
+  }
+
+  if (!pubSubClient.connected())
+  {
+    Serial.println("AWS IoT Timeout");
+    return;
+  }
+
+  // Subscribe to a topic
+  pubSubClient.subscribe(AWS_SUB_TOPIC);
+
+  Serial.println("AWS IOT Connection Successful");
+}
 
 void setup()
 {
