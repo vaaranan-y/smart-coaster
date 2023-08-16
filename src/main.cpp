@@ -64,6 +64,17 @@ void connectAWS()
   Serial.println("AWS IOT Connection Successful");
 }
 
+void publishMessage()
+{
+  StaticJsonDocument<200> doc;
+  doc["rawScaleValue"] = rawScaleValue;
+  doc["calibratedMassValue"] = calibratedMassValue;
+  char jsonBuffer[512];
+  serializeJson(doc, jsonBuffer); // print to client
+
+  pubSubClient.publish(AWS_PUB_TOPIC, jsonBuffer);
+}
+
 void setup()
 {
   Serial.begin(115200); // Set the baud rate to 115200 (change if needed)
@@ -96,6 +107,12 @@ void loop()
     Serial.print("ACTUAL MEASURE: ");
     Serial.print(reading / 395.32);
     Serial.println("g");
+
+    rawScaleValue = reading;
+    calibratedMassValue = reading / 395.32;
+
+    publishMessage();
+    pubSubClient.loop();
   }
   else
   {
