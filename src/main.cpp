@@ -19,17 +19,6 @@ HX711 scale;
 WiFiClientSecure net = WiFiClientSecure();
 PubSubClient client(net);
 
-void messageHandler(char *topic, byte *payload, unsigned int length)
-{
-  Serial.print("incoming: ");
-  Serial.println(topic);
-  if (strstr(topic, "esp32/sub"))
-  {
-    Serial.print("Message Received from Sub Topic!");
-  }
-  Serial.println();
-}
-
 void publishMessage()
 {
   StaticJsonDocument<200> doc;
@@ -39,6 +28,18 @@ void publishMessage()
   serializeJson(doc, jsonBuffer); // print to client
   Serial.println("Sending Data");
   client.publish(AWS_IOT_PUBLISH_TOPIC, jsonBuffer);
+}
+
+void messageHandler(char *topic, byte *payload, unsigned int length)
+{
+  Serial.print("incoming: ");
+  Serial.println(topic);
+  if (strstr(topic, "esp32/sub"))
+  {
+    Serial.print("Message Received from Sub Topic!");
+    publishMessage();
+  }
+  Serial.println();
 }
 
 void setup()
@@ -89,16 +90,18 @@ void setup()
 
   Serial.print("ESP32 Serial Monitor Test\n"); // Print a message to the serial monitor
   pinMode(LED_BUILTIN, OUTPUT);
+  scale.begin(LOADCELL_DOUT, LOADCELL_SCK);
+
   scale.set_scale();
-  // Serial.println("Tare... remove any weights from the scale.");
-  // // delay(5000);
-  // scale.tare();
-  // Serial.println("Tare done...");
+  Serial.println("Tare... remove any weights from the scale.");
+  // delay(5000);
+  scale.tare();
+  Serial.println("Tare done...");
 }
 
 void loop()
 {
-  Serial.print("Place a known weight on the scale...");
+  Serial.println("Place a known weight on the scale...");
   delay(2500);
   double scaleVal = 395.32;
   long reading = scale.get_units(10);
@@ -111,7 +114,9 @@ void loop()
     return;
   }
 
-  publishMessage();
+  Serial.print("Actual Mass: ");
+  Serial.println(calibratedMassValue);
+
   client.loop();
   delay(1000);
 }
