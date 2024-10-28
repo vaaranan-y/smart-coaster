@@ -1,0 +1,5 @@
+# Ignore the entire build directory
+hello_world/build/
+
+# Ignore SDK configuration backup files
+sdkconfig.old
