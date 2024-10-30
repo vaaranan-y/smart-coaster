@@ -3,3 +3,6 @@ hello_world/build/
 
 # Ignore SDK configuration backup files
 hello_world/sdkconfig.old
+
+.vscode/
+build/
