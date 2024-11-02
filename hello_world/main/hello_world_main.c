@@ -18,6 +18,8 @@
 
 void test(void *pvParameters)
 {
+    float scaleCalibration = 48400;
+
     // Load Cell Code
     hx711_t dev = {
         .dout = GPIO_NUM_16,
