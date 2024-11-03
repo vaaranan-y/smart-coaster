@@ -28,9 +28,31 @@ void test(void *pvParameters)
 
     ESP_ERROR_CHECK(hx711_init(&dev));
 
+    // Calibration
+    esp_err_t r = hx711_wait(&dev, 500);
+    if (r != ESP_OK)
+    {
+        // ESP_LOGE(TAG, "Device not found: %d (%s)\n", r, esp_err_to_name(r));
+        printf("Device not found: %d (%s)\n", r, esp_err_to_name(r));
+        return;
+    }
+
+    printf("Getting offset  ...\n");
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    int32_t data;
+    r = hx711_read_average(&dev, 10, &data);
+    int32_t offset = data;
+
+    printf("Place a known weight on the scale\n");
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    int32_t knownWeight = 362;
+    printf("Calibrating...\n");
+    r = hx711_read_average(&dev, 10, &data);
+    float scalingFactor = (data - offset) / knownWeight;
+
     while (1)
     {
-        printf("Hello world loop!\n");
+        printf("Weight reading loop!\n");
         esp_err_t r = hx711_wait(&dev, 500);
         if (r != ESP_OK)
         {
@@ -40,7 +62,7 @@ void test(void *pvParameters)
         }
 
         int32_t data;
-        r = hx711_read_average(&dev, 1, &data);
+        r = hx711_read_average(&dev, 10, &data);
         if (r != ESP_OK)
         {
             // ESP_LOGE(TAG, "Could not read data: %d (%s)\n", r, esp_err_to_name(r));
@@ -50,6 +72,8 @@ void test(void *pvParameters)
 
         // ESP_LOGI(TAG, "Raw data: %" PRIi32, data);
         printf("Raw data: %" PRIi32 "\n", data);
+        float actual = (data - offset) / scalingFactor;
+        printf("Actual mass: %fg\n", actual);
 
         vTaskDelay(pdMS_TO_TICKS(500));
     }
