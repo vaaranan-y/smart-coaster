@@ -1,8 +1,8 @@
 # Ignore the entire build directory
-hello_world/build/
+smart_coaster/build/
 
 # Ignore SDK configuration backup files
-hello_world/sdkconfig.old
+smart_coaster/sdkconfig.old
 
 .vscode/
 build/
