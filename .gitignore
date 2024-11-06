@@ -4,5 +4,7 @@ smart_coaster/build/
 # Ignore SDK configuration backup files
 smart_coaster/sdkconfig.old
 
+#
+smart_coaster/components/library/firebase_config.h
 .vscode/
 build/
