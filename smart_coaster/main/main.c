@@ -31,6 +31,8 @@ static EventGroupHandle_t wifi_event_group;
 #define WIFI_FAIL_BIT BIT1
 static int s_retry_num = 0;
 #define EXAMPLE_ESP_MAXIMUM_RETRY 5
+extern const uint8_t firebase_cert_pem_start[] asm("_binary_firebase_cert_pem_start");
+extern const uint8_t firebase_cert_pem_end[] asm("_binary_firebase_cert_pem_end");
 
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
@@ -150,13 +152,14 @@ static void _wifi_event_handler(void *arg, esp_event_base_t event_base,
 static void http_rest_with_hostname_path(void)
 {
 
-    // esp_http_client_config_t config = {
-    //     .host = "httpbin.org",
-    //     .path = "/get",
-    //     .transport_type = HTTP_TRANSPORT_OVER_TCP,
-    //     .event_handler = _http_event_handler,
-    // };
-    // esp_http_client_handle_t client = esp_http_client_init(&config);
+    esp_http_client_config_t config = {
+        .host = FIREBASE_HOST,
+        .path = "/post",
+        .transport_type = HTTP_TRANSPORT_OVER_TCP,
+        .event_handler = _http_event_handler,
+        .cert_pem = firebase_cert_pem_start,
+    };
+    esp_http_client_handle_t client = esp_http_client_init(&config);
 
     // // GET
     // esp_err_t err = esp_http_client_perform(client);
@@ -171,22 +174,23 @@ static void http_rest_with_hostname_path(void)
     //     ESP_LOGE(TAG, "HTTP GET request failed: %s", esp_err_to_name(err));
     // }
 
-    // // // POST
-    // // const char *post_data = "field1=value1&field2=value2";
-    // // esp_http_client_set_url(client, "/post");
-    // // esp_http_client_set_method(client, HTTP_METHOD_POST);
-    // // esp_http_client_set_post_field(client, post_data, strlen(post_data));
-    // // err = esp_http_client_perform(client);
-    // // if (err == ESP_OK)
-    // // {
-    // //     ESP_LOGI(TAG, "HTTP POST Status = %d, content_length = %lld",
-    // //              esp_http_client_get_status_code(client),
-    // //              esp_http_client_get_content_length(client));
-    // // }
-    // // else
-    // // {
-    // //     ESP_LOGE(TAG, "HTTP POST request failed: %s", esp_err_to_name(err));
-    // // }
+    // POST
+    const char *post_data = "{\"field1\":\"value1\"}";
+    esp_http_client_set_url(client, "/post");
+    esp_http_client_set_header(client, "Content-Type", "application/json");
+    esp_http_client_set_method(client, HTTP_METHOD_POST);
+    esp_http_client_set_post_field(client, post_data, strlen(post_data));
+    esp_err_t err = esp_http_client_perform(client);
+    if (err == ESP_OK)
+    {
+        ESP_LOGI(TAG, "HTTP POST Status = %d, content_length = %lld",
+                 esp_http_client_get_status_code(client),
+                 esp_http_client_get_content_length(client));
+    }
+    else
+    {
+        ESP_LOGE(TAG, "HTTP POST request failed: %s", esp_err_to_name(err));
+    }
 
     // // // PUT
     // // esp_http_client_set_url(client, "/put");
