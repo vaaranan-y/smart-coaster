@@ -9,6 +9,7 @@
 #include "sdkconfig.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "../components/library/firebase_config.h"
 #include "esp_chip_info.h"
 #include "esp_flash.h"
 #include "esp_system.h"
@@ -27,8 +28,11 @@ static const char *TAG = "HTTP_CLIENT";
 #define NVS_NAMESPACE "nvs"
 static EventGroupHandle_t wifi_event_group;
 #define WIFI_CONNECTED_BIT BIT0
+#define WIFI_FAIL_BIT BIT1
+static int s_retry_num = 0;
+#define EXAMPLE_ESP_MAXIMUM_RETRY 5
 
-esp_err_t _http_event_handler(esp_http_client_event_t *evt)
+static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
     static char *output_buffer; // Buffer to store response of http request from event handler
     static int output_len;      // Stores number of bytes read
@@ -113,37 +117,49 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     return ESP_OK;
 }
 
+static void _wifi_event_handler(void *arg, esp_event_base_t event_base,
+                                int32_t event_id, void *event_data)
+{
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
+    {
+        esp_wifi_connect();
+    }
+    else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
+    {
+        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY)
+        {
+            esp_wifi_connect();
+            s_retry_num++;
+            ESP_LOGI(TAG, "retry to connect to the AP");
+        }
+        else
+        {
+            xEventGroupSetBits(wifi_event_group, WIFI_FAIL_BIT);
+        }
+        ESP_LOGI(TAG, "connect to the AP fail");
+    }
+    else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
+    {
+        ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
+        ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
+        s_retry_num = 0;
+        xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
+    }
+}
+
 static void http_rest_with_hostname_path(void)
 {
 
-    esp_netif_init();                // Initialize network interface
-    esp_event_loop_create_default(); // Create default event loop
+    // esp_http_client_config_t config = {
+    //     .host = "httpbin.org",
+    //     .path = "/get",
+    //     .transport_type = HTTP_TRANSPORT_OVER_TCP,
+    //     .event_handler = _http_event_handler,
+    // };
+    // esp_http_client_handle_t client = esp_http_client_init(&config);
 
-    esp_netif_create_default_wifi_sta(); // Create a default STA interface
-
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT(); // Default wifi config
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-
-    ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_FLASH)); // Set storage type
-    ESP_ERROR_CHECK(esp_wifi_start());                         // Start WiFi
-
-    // Wait for WiFi connection
-    wifi_event_group = xEventGroupCreate();
-    EventBits_t bits = xEventGroupWaitBits(wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
-
-    // Once connected, proceed with the HTTP request
-    ESP_LOGI(TAG, "WiFi connected! Starting HTTP client...");
-
-    esp_http_client_config_t config = {
-        .host = "httpbin.org",
-        .path = "/get",
-        .transport_type = HTTP_TRANSPORT_OVER_TCP,
-        .event_handler = _http_event_handler,
-    };
-    esp_http_client_handle_t client = esp_http_client_init(&config);
-
-    // GET
-    esp_err_t err = esp_http_client_perform(client);
+    // // GET
+    // esp_err_t err = esp_http_client_perform(client);
     // if (err == ESP_OK)
     // {
     //     ESP_LOGI(TAG, "HTTP GET Status = %d, content_length = %lld",
@@ -155,85 +171,85 @@ static void http_rest_with_hostname_path(void)
     //     ESP_LOGE(TAG, "HTTP GET request failed: %s", esp_err_to_name(err));
     // }
 
-    // // POST
-    // const char *post_data = "field1=value1&field2=value2";
-    // esp_http_client_set_url(client, "/post");
-    // esp_http_client_set_method(client, HTTP_METHOD_POST);
-    // esp_http_client_set_post_field(client, post_data, strlen(post_data));
-    // err = esp_http_client_perform(client);
-    // if (err == ESP_OK)
-    // {
-    //     ESP_LOGI(TAG, "HTTP POST Status = %d, content_length = %lld",
-    //              esp_http_client_get_status_code(client),
-    //              esp_http_client_get_content_length(client));
-    // }
-    // else
-    // {
-    //     ESP_LOGE(TAG, "HTTP POST request failed: %s", esp_err_to_name(err));
-    // }
+    // // // POST
+    // // const char *post_data = "field1=value1&field2=value2";
+    // // esp_http_client_set_url(client, "/post");
+    // // esp_http_client_set_method(client, HTTP_METHOD_POST);
+    // // esp_http_client_set_post_field(client, post_data, strlen(post_data));
+    // // err = esp_http_client_perform(client);
+    // // if (err == ESP_OK)
+    // // {
+    // //     ESP_LOGI(TAG, "HTTP POST Status = %d, content_length = %lld",
+    // //              esp_http_client_get_status_code(client),
+    // //              esp_http_client_get_content_length(client));
+    // // }
+    // // else
+    // // {
+    // //     ESP_LOGE(TAG, "HTTP POST request failed: %s", esp_err_to_name(err));
+    // // }
 
-    // // PUT
-    // esp_http_client_set_url(client, "/put");
-    // esp_http_client_set_method(client, HTTP_METHOD_PUT);
-    // err = esp_http_client_perform(client);
-    // if (err == ESP_OK)
-    // {
-    //     ESP_LOGI(TAG, "HTTP PUT Status = %d, content_length = %lld",
-    //              esp_http_client_get_status_code(client),
-    //              esp_http_client_get_content_length(client));
-    // }
-    // else
-    // {
-    //     ESP_LOGE(TAG, "HTTP PUT request failed: %s", esp_err_to_name(err));
-    // }
+    // // // PUT
+    // // esp_http_client_set_url(client, "/put");
+    // // esp_http_client_set_method(client, HTTP_METHOD_PUT);
+    // // err = esp_http_client_perform(client);
+    // // if (err == ESP_OK)
+    // // {
+    // //     ESP_LOGI(TAG, "HTTP PUT Status = %d, content_length = %lld",
+    // //              esp_http_client_get_status_code(client),
+    // //              esp_http_client_get_content_length(client));
+    // // }
+    // // else
+    // // {
+    // //     ESP_LOGE(TAG, "HTTP PUT request failed: %s", esp_err_to_name(err));
+    // // }
 
-    // // PATCH
-    // esp_http_client_set_url(client, "/patch");
-    // esp_http_client_set_method(client, HTTP_METHOD_PATCH);
-    // esp_http_client_set_post_field(client, NULL, 0);
-    // err = esp_http_client_perform(client);
-    // if (err == ESP_OK)
-    // {
-    //     ESP_LOGI(TAG, "HTTP PATCH Status = %d, content_length = %lld",
-    //              esp_http_client_get_status_code(client),
-    //              esp_http_client_get_content_length(client));
-    // }
-    // else
-    // {
-    //     ESP_LOGE(TAG, "HTTP PATCH request failed: %s", esp_err_to_name(err));
-    // }
+    // // // PATCH
+    // // esp_http_client_set_url(client, "/patch");
+    // // esp_http_client_set_method(client, HTTP_METHOD_PATCH);
+    // // esp_http_client_set_post_field(client, NULL, 0);
+    // // err = esp_http_client_perform(client);
+    // // if (err == ESP_OK)
+    // // {
+    // //     ESP_LOGI(TAG, "HTTP PATCH Status = %d, content_length = %lld",
+    // //              esp_http_client_get_status_code(client),
+    // //              esp_http_client_get_content_length(client));
+    // // }
+    // // else
+    // // {
+    // //     ESP_LOGE(TAG, "HTTP PATCH request failed: %s", esp_err_to_name(err));
+    // // }
 
-    // // DELETE
-    // esp_http_client_set_url(client, "/delete");
-    // esp_http_client_set_method(client, HTTP_METHOD_DELETE);
-    // err = esp_http_client_perform(client);
-    // if (err == ESP_OK)
-    // {
-    //     ESP_LOGI(TAG, "HTTP DELETE Status = %d, content_length = %lld",
-    //              esp_http_client_get_status_code(client),
-    //              esp_http_client_get_content_length(client));
-    // }
-    // else
-    // {
-    //     ESP_LOGE(TAG, "HTTP DELETE request failed: %s", esp_err_to_name(err));
-    // }
+    // // // DELETE
+    // // esp_http_client_set_url(client, "/delete");
+    // // esp_http_client_set_method(client, HTTP_METHOD_DELETE);
+    // // err = esp_http_client_perform(client);
+    // // if (err == ESP_OK)
+    // // {
+    // //     ESP_LOGI(TAG, "HTTP DELETE Status = %d, content_length = %lld",
+    // //              esp_http_client_get_status_code(client),
+    // //              esp_http_client_get_content_length(client));
+    // // }
+    // // else
+    // // {
+    // //     ESP_LOGE(TAG, "HTTP DELETE request failed: %s", esp_err_to_name(err));
+    // // }
 
-    // // HEAD
-    // esp_http_client_set_url(client, "/get");
-    // esp_http_client_set_method(client, HTTP_METHOD_HEAD);
-    // err = esp_http_client_perform(client);
-    // if (err == ESP_OK)
-    // {
-    //     ESP_LOGI(TAG, "HTTP HEAD Status = %d, content_length = %lld",
-    //              esp_http_client_get_status_code(client),
-    //              esp_http_client_get_content_length(client));
-    // }
-    // else
-    // {
-    //     ESP_LOGE(TAG, "HTTP HEAD request failed: %s", esp_err_to_name(err));
-    // }
+    // // // HEAD
+    // // esp_http_client_set_url(client, "/get");
+    // // esp_http_client_set_method(client, HTTP_METHOD_HEAD);
+    // // err = esp_http_client_perform(client);
+    // // if (err == ESP_OK)
+    // // {
+    // //     ESP_LOGI(TAG, "HTTP HEAD Status = %d, content_length = %lld",
+    // //              esp_http_client_get_status_code(client),
+    // //              esp_http_client_get_content_length(client));
+    // // }
+    // // else
+    // // {
+    // //     ESP_LOGE(TAG, "HTTP HEAD request failed: %s", esp_err_to_name(err));
+    // // }
 
-    // esp_http_client_cleanup(client);
+    esp_http_client_cleanup(client);
 }
 
 static void http_test_task(void *pvParameters)
@@ -379,6 +395,45 @@ void app_main(void)
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
+
+    esp_netif_init();                // Initialize network interface
+    esp_event_loop_create_default(); // Create default event loop
+
+    esp_netif_create_default_wifi_sta(); // Create a default STA interface
+
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT(); // Default wifi config
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+    esp_event_handler_instance_t instance_any_id;
+    esp_event_handler_instance_t instance_got_ip;
+
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                        ESP_EVENT_ANY_ID,
+                                                        &_wifi_event_handler,
+                                                        NULL,
+                                                        &instance_any_id));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+                                                        IP_EVENT_STA_GOT_IP,
+                                                        &_wifi_event_handler,
+                                                        NULL,
+                                                        &instance_got_ip));
+
+    wifi_config_t wifi_config = {
+        .sta = {
+            .ssid = SSID,
+            .password = PASSWORD,
+        }};
+
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config)); // Set WiFi mode to station
+    ESP_ERROR_CHECK(esp_wifi_start());                                   // Start WiFi
+
+    // Wait for WiFi connection
+    wifi_event_group = xEventGroupCreate();
+    EventBits_t bits = xEventGroupWaitBits(wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
+
+    // Once connected, proceed with the HTTP request
+    ESP_LOGI(TAG, "WiFi connected!");
 
     xTaskCreate(testScale, "testScale", configMINIMAL_STACK_SIZE * 5, NULL, 5, NULL);
 }
