@@ -31,8 +31,6 @@ static EventGroupHandle_t wifi_event_group;
 #define WIFI_FAIL_BIT BIT1
 static int s_retry_num = 0;
 #define EXAMPLE_ESP_MAXIMUM_RETRY 5
-extern const uint8_t firebase_cert_pem_start[] asm("_binary_firebase_cert_pem_start");
-extern const uint8_t firebase_cert_pem_end[] asm("_binary_firebase_cert_pem_end");
 
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
@@ -153,11 +151,9 @@ static void http_rest_with_hostname_path(void)
 {
 
     esp_http_client_config_t config = {
-        .host = FIREBASE_HOST,
-        .path = "/post",
+        .url = FIREBASE_HOST,
         .transport_type = HTTP_TRANSPORT_OVER_TCP,
         .event_handler = _http_event_handler,
-        .cert_pem = firebase_cert_pem_start,
     };
     esp_http_client_handle_t client = esp_http_client_init(&config);
 
@@ -176,7 +172,6 @@ static void http_rest_with_hostname_path(void)
 
     // POST
     const char *post_data = "{\"field1\":\"value1\"}";
-    esp_http_client_set_url(client, "/post");
     esp_http_client_set_header(client, "Content-Type", "application/json");
     esp_http_client_set_method(client, HTTP_METHOD_POST);
     esp_http_client_set_post_field(client, post_data, strlen(post_data));
