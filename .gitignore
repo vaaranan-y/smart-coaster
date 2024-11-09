@@ -1,10 +1,10 @@
 # Ignore the entire build directory
-smart_coaster/build/
+smart-coaster-esp32/build/
 
 # Ignore SDK configuration backup files
-smart_coaster/sdkconfig.old
+smart-coaster-esp32/sdkconfig.old
 
 #
-smart_coaster/components/library/firebase_config.h
+smart-coaster-esp32/components/library/firebase_config.h
 .vscode/
 build/
