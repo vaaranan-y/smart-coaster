@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <inttypes.h>
+#include <time.h>
 #include "sdkconfig.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -31,6 +32,7 @@ static EventGroupHandle_t wifi_event_group;
 #define WIFI_FAIL_BIT BIT1
 static int s_retry_num = 0;
 #define EXAMPLE_ESP_MAXIMUM_RETRY 5
+static float currentMass = 0;
 
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
@@ -171,7 +173,10 @@ static void http_rest_with_hostname_path(void)
     // }
 
     // POST
-    const char *post_data = "{\"field1\":\"value1\"}";
+    char post_data[50];
+    time_t timestamp = time(NULL);
+    sprintf(post_data, "{\"currentMass\":\"%f\", \"timeStamp\": \"%lld\"}", currentMass, timestamp);
+    printf("TimeStamp: %lld\n", timestamp);
     esp_http_client_set_header(client, "Content-Type", "application/json");
     esp_http_client_set_method(client, HTTP_METHOD_POST);
     esp_http_client_set_post_field(client, post_data, strlen(post_data));
@@ -377,8 +382,9 @@ void testScale(void *pvParameters)
         printf("Raw data: %" PRIi32 "\n", data);
         float actual = (data - offset) / scalingFactor;
         printf("Actual mass: %fg\n", actual);
+        currentMass = actual;
         xTaskCreate(&http_test_task, "http_test_task", 8192, NULL, 5, NULL);
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
 
