@@ -29,9 +29,38 @@
 		7CAD502B2CDFE25000BFB75E /* smart-coaster-iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "smart-coaster-iosUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7CAD505B2CE037CB00BFB75E /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-ios" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 7CAD50102CDFE24E00BFB75E /* smart-coaster-ios */;
+		};
+		7CAD505E2CE03B5900BFB75E /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-iosTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ContentView.swift,
+			);
+			target = 7CAD50202CDFE25000BFB75E /* smart-coaster-iosTests */;
+		};
+		7CAD505F2CE03B5900BFB75E /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-iosUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ContentView.swift,
+			);
+			target = 7CAD502A2CDFE25000BFB75E /* smart-coaster-iosUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7CAD50132CDFE24E00BFB75E /* smart-coaster-ios */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7CAD505B2CE037CB00BFB75E /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-ios" target */,
+				7CAD505E2CE03B5900BFB75E /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-iosTests" target */,
+				7CAD505F2CE03B5900BFB75E /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-iosUITests" target */,
+			);
 			path = "smart-coaster-ios";
 			sourceTree = "<group>";
 		};
@@ -398,6 +427,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"smart-coaster-ios/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "smart-coaster-ios/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -426,6 +456,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"smart-coaster-ios/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "smart-coaster-ios/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

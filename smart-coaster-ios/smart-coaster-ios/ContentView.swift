@@ -10,12 +10,20 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            HStack{
+                Text("Smart Coaster")
+                    .font(.largeTitle)
+                    .font(Font.custom("LexendDeca-Bold", size: 18))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+            .padding(.top, 20)
+        Spacer()
+            
         }
-        .padding()
+        .containerRelativeFrame([.horizontal, .vertical])
+        .background(Gradient(colors: [.blue, .white]))
     }
 }
 
