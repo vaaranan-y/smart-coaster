@@ -9,8 +9,9 @@ smart-coaster-esp32/components/library/firebase_config.h
 .vscode/
 build/
 
-./smart-coaster-backend/node_modules/
-./smart-coaster-backend/.env
+smart-coaster-backend/node_modules/
+smart-coaster-backend/.env
+smart-coaster-backend/smart-coaster-fd238-firebase-adminsdk-1754f-334bce07db.json
 
 ### Swift ###
 # Xcode
