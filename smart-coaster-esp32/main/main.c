@@ -22,6 +22,10 @@
 #include "esp_http_client.h"
 #include "esp_tls.h"
 #include "esp_wifi.h"
+#include "esp_sntp.h"
+#include "esp_netif.h"
+#include "esp_netif_types.h"
+#include "esp_netif_sntp.h"
 
 #define MAX_HTTP_RECV_BUFFER 512
 #define MAX_HTTP_OUTPUT_BUFFER 2048
@@ -174,7 +178,9 @@ static void http_rest_with_hostname_path(void)
 
     // POST
     char post_data[50];
-    time_t timestamp = time(NULL);
+    time_t timestamp;
+    time(&timestamp);
+
     sprintf(post_data, "{\"currentMass\":\"%f\", \"timeStamp\": \"%lld\"}", currentMass, timestamp);
     printf("TimeStamp: %lld\n", timestamp);
     esp_http_client_set_header(client, "Content-Type", "application/json");
@@ -439,6 +445,15 @@ void app_main(void)
 
     // Once connected, proceed with the HTTP request
     ESP_LOGI(TAG, "WiFi connected!");
+
+    // Synchronize time with NTP server
+    esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+    esp_netif_sntp_init(&config);
+
+    if (esp_netif_sntp_sync_wait(pdMS_TO_TICKS(10000)) != ESP_OK)
+    {
+        printf("Failed to update system time within 10s timeout");
+    }
 
     xTaskCreate(testScale, "testScale", configMINIMAL_STACK_SIZE * 5, NULL, 5, NULL);
 }
