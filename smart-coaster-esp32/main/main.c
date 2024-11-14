@@ -155,9 +155,17 @@ static void _wifi_event_handler(void *arg, esp_event_base_t event_base,
 
 static void http_rest_with_hostname_path(void)
 {
+    char endpoint[200];
+    strcpy(endpoint, FIREBASE_HOST);
+    strcat(endpoint, PATH);
+    strcat(endpoint, SERIAL_NUMBER);
+    strcat(endpoint, FIREBASE_DATA_TYPE);
+    strcat(endpoint, API_KEY);
+
+    printf("Endpoint: %s\n", endpoint);
 
     esp_http_client_config_t config = {
-        .url = FIREBASE_HOST,
+        .url = endpoint,
         .transport_type = HTTP_TRANSPORT_OVER_TCP,
         .event_handler = _http_event_handler,
     };
