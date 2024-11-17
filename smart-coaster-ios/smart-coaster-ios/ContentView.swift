@@ -9,6 +9,9 @@ import SwiftUI
 import Charts
 
 struct ContentView: View {
+    @StateObject private var vm = SmartCoasterViewModel(isLoading: false)
+    
+    var defaultValue = -1
     var body: some View {
         VStack {
             HStack{
@@ -21,7 +24,7 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, alignment: .topLeading)
             .padding(.top, 20)
             VStack{
-                Text("Total Water Consumed: TBA")
+                Text("Total Water Consumed: \(vm.smartCoaster?.goal ?? defaultValue)")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 20)
                     .padding(.leading, 20)
