@@ -9,34 +9,39 @@ import SwiftUI
 import Charts
 
 struct ContentView: View {
-    @StateObject private var vm = SmartCoasterViewModel(isLoading: false)
+    @StateObject private var viewModel = SmartCoasterViewModel()
     
     var defaultValue = -1
     var body: some View {
         VStack {
             HStack{
                 Text("Smart Coaster")
-                    .font(.largeTitle)
-                    .font(Font.custom("LexendDeca-Bold", size: 18))
+                    .font(.system(size: 50))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
             .frame(maxWidth: .infinity, alignment: .topLeading)
             .padding(.top, 20)
             VStack{
-                Text("Total Water Consumed: \(vm.smartCoaster?.goal ?? defaultValue)")
+                Text("Total Water Consumed: \(viewModel.waterConsumedDay ?? -1)")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 20)
                     .padding(.leading, 20)
+                    .font(.system(size: 30))
                 Text("Goal: TBA")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 20)
                     .padding(.leading, 20)
+                    .font(.system(size: 30))
                 Text("% Complete: TBA")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 20)
                     .padding(.leading, 20)
+                    .font(.system(size: 30))
             }.padding(.top, 40)
+                .onAppear {
+                    viewModel.fetchWaterConsumedDay()
+                }
             Spacer()
         }
         .containerRelativeFrame([.horizontal, .vertical])

@@ -30,7 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		7CAD505B2CE037CB00BFB75E /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-ios" target */ = {
+		7C83544D2CEAFA7E005DA9D5 /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-ios" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -57,7 +57,7 @@
 		7CAD50132CDFE24E00BFB75E /* smart-coaster-ios */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				7CAD505B2CE037CB00BFB75E /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-ios" target */,
+				7C83544D2CEAFA7E005DA9D5 /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-ios" target */,
 				7CAD505E2CE03B5900BFB75E /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-iosTests" target */,
 				7CAD505F2CE03B5900BFB75E /* Exceptions for "smart-coaster-ios" folder in "smart-coaster-iosUITests" target */,
 			);
