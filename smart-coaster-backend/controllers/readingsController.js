@@ -6,14 +6,14 @@ const getReadings = async (req, res) => {
         const snapshot = await db.ref('userData/0').once('value');
         const readings = snapshot.val();
         console.log(readings);
-        res.json(readings);
+        res.status(201).json(readings);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
 // Fetch readings by TimeFrame
-const getReadingsByDate = async (req, res) => {
+const getReadingsByTimeFrame = async (req, res) => {
     const { startStamp, endStamp } = req.query; // Timestamps must be in epoch time
     try {
         const snapshot = await db.ref('userData/0')
@@ -29,7 +29,8 @@ const getReadingsByDate = async (req, res) => {
     }
 };
 
-const getWaterConsumedOnDay = async (req, res) => {
+// Fetch water consumed on given day
+const getWaterConsumed = async (req, res) => {
     const { dayStamp } = req.query;
 
     const startOfDay = new Date(`${dayStamp}T00:00:00`);
@@ -82,7 +83,7 @@ const getWaterConsumedOnDay = async (req, res) => {
             }
         }
 
-        res.json({"cupsDrank": numberOfCupsDrank});
+        res.json({waterConsumedDay: numberOfCupsDrank});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -90,4 +91,17 @@ const getWaterConsumedOnDay = async (req, res) => {
 
 };
 
-module.exports = {getReadings, getReadingsByDate, getWaterConsumedOnDay}
+// Fetch average water consumed in week
+const getAverageWaterConsumed = async (req, res) => {
+    try {
+        res.status(201).json({waterConsumedWeek: 0});
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+
+
+
+
+module.exports = {getReadings, getReadingsByTimeFrame, getWaterConsumed, getAverageWaterConsumed}
