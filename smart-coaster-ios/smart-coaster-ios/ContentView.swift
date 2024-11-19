@@ -23,17 +23,17 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, alignment: .topLeading)
             .padding(.top, 20)
             VStack{
-                Text("Total Water Consumed: \(viewModel.waterConsumedDay ?? -1)")
+                Text("Total Cups Consumed: \(viewModel.waterConsumedDay ?? -1)")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 20)
                     .padding(.leading, 20)
                     .font(.system(size: 30))
-                Text("Goal: TBA")
+                Text("Goal: \(viewModel.waterGoal ?? -1)")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 20)
                     .padding(.leading, 20)
                     .font(.system(size: 30))
-                Text("% Complete: TBA")
+                Text("% Complete:\(viewModel.percentComplete ?? -1)%")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 20)
                     .padding(.leading, 20)
@@ -41,6 +41,8 @@ struct ContentView: View {
             }.padding(.top, 40)
                 .onAppear {
                     viewModel.fetchWaterConsumedDay()
+                    viewModel.fetchGoal()
+                    viewModel.fetchPercentComplete()
                 }
             Spacer()
         }

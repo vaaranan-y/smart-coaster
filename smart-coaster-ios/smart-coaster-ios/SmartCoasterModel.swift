@@ -12,3 +12,7 @@ struct WaterConsumedDay: Codable {
 struct WaterConsumedWeek: Codable {
     let waterConsumedWeek: Int
 }
+
+struct WaterGoal: Codable {
+    let goal: Int
+}
