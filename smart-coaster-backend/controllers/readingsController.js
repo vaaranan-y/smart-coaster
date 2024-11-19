@@ -29,7 +29,7 @@ const getReadingsByTimeFrame = async (req, res) => {
     }
 };
 
-// Fetch water consumed on given day
+// Fetch water consumed on given day in ISO-8601 format
 const getWaterConsumed = async (req, res) => {
     const { dayStamp } = req.query;
 
@@ -50,36 +50,29 @@ const getWaterConsumed = async (req, res) => {
         masses = [];
         for(key in readings) {
             masses.push(parseFloat(readings[key].currentMass));
-            console.log(parseFloat(readings[key].currentMass));
         }
  
         prevMass = masses[0];
         numberOfCupsDrank = 0;
         currFilledCupMass = masses[0];
+        console.log(masses)
 
-        for(massIndex in masses) {
-            mass = masses[massIndex];
+        for(let i = 1; i < masses.length; i += 1) {
+            currMass = masses[i];
             
-            
-            if(!((mass < prevMass + 5 && mass > prevMass - 5) || (mass <= 5))){
-                console.log("Prev Mass: " + prevMass);
-                console.log("Current Mass: " + mass);   
-                // First condition checks if cup has not been picked up to drink
-                // Second condition checks if cup has been picked up
-                // If neither condition above has been fulfilled, then there was a definitive change in
-                // the amount of water in the cup, which either means:
-                //      1. The user took a sip of water
-                //      2. The user refilled the cup
-
-                
-
-                if(mass > prevMass) {
-                    // Cup has been set back down, and the mass has increased, meaning the cup was filled
-                    console.log("Cup filled!");
+            // 5 is like a +/- threshold
+            if(currMass <= 5) {
+                // The glass has been picked up
+                continue;
+            } else {
+                // The glass is on the coaster
+                if(currMass > prevMass + 5) {
+                    // The glass on the coaster is heavier than before, 
+                    // which means it has been filled, meaning the user 
+                    // finished a cup of water
                     numberOfCupsDrank += 1;
-                    currFilledCupMass = mass;
                 }
-                prevMass = mass;
+                prevMass = currMass;
             }
         }
 
