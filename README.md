@@ -14,3 +14,6 @@ In this project, I developed a smart coaster to help me track how much water I w
     - **Express.js**: This is the framework used to build the backend API to process the readings and produce meaningful data to a user/frontend (i.e. the total water consumed, over different, in different units of measurement, etc.).
     - **Swift**: This was the language used to build the iOS app for a user to practically monitor their water consumption.
     - **ESP-IDF**: The framework used to build, flash, monitor firmware on the ESP32 (see https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html for more details)
+
+## Demo
+![gif-smart-coaster-demo](https://github.com/user-attachments/assets/2da65ec6-6bb0-493a-8c7c-6db0e9273924)
